@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income and Expenditure Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+        <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="balance">
+            Balance: $<span class="h">0</span>
+        </h1>
+        <form>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="income">Income</label>
+                    <input type="number" class="inc" id="income" placeholder="Enter income">
+                </div>
+                <div class="form-group">
+                    <label for="expenditure">Expenditure</label>
+                    <input type="number" class="exp" id="expenditure" placeholder="Enter expenditure">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="note">Note</label>
+                <textarea class="note" id="note" rows="3" placeholder="Add a note"></textarea>
+            </div>
+            <button type="submit" class="btn-submit sub">Submit</button>
+        </form>
+        <div class="history"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('.h').innerHTML = 0;
+            document.querySelector('.sub').disabled = true;
+
+            document.addEventListener('keyup', () => {
+                if (document.querySelector('.inc').value != '' || document.querySelector('.exp').value !== '') {
+                    document.querySelector('.sub').disabled = false;
+                } else {
+                    document.querySelector('.sub').disabled = true;
+                }
+            });
+
+            document.querySelector('form').onsubmit = (event) => {
+                event.preventDefault();
+                const k1 = document.createElement('div');
+                const k2 = document.createElement('div');
+                const kk = document.querySelector('.inc').value;
+                const kkk = document.querySelector('.exp').value;
+                const note = document.querySelector('.note').value;
+
+                if (kk !== '') {
+                    k1.classList.add('history-item', 'income');
+                    k1.innerHTML = `<div><p>Income: $${kk}</p><p>Note: ${note}</p></div>`;
+                    const but = document.createElement('button');
+                    but.textContent = 'Delete';
+                    k1.appendChild(but);
+                    but.onclick = () => {
+                        k1.remove();
+                        updateBalance();
+                    };
+                    document.querySelector('.history').appendChild(k1);
+                }
+                if (kkk !== '') {
+                    k2.classList.add('history-item', 'expenditure');
+                    k2.innerHTML = `<div><p>Expenditure: $${kkk}</p><p>Note: ${note}</p></div>`;
+                    const but = document.createElement('button');
+                    but.textContent = 'Delete';
+                    k2.appendChild(but);
+                    but.onclick = () => {
+                        k2.remove();
+                        updateBalance();
+                    };
+                    document.querySelector('.history').appendChild(k2);
+                }
+                document.querySelector('.inc').value = '';
+                document.querySelector('.exp').value = '';
+                document.querySelector('.note').value = '';
+                updateBalance();
+            };
+
+            function updateBalance() {
+                let value = 0;
+                document.querySelectorAll('.history-item').forEach(item => {
+                    const text = item.querySelector('div p').textContent;
+                    const amount = parseFloat(text.split('$')[1]);
+                    if (text.startsWith('Income')) {
+                        value += amount;
+                    } else if (text.startsWith('Expenditure')) {
+                        value -= amount;
+                    }
+                });
+                document.querySelector('.h').innerHTML = value.toFixed(2);
+                document.querySelector('.balance').style.color = value >= 0 ? '#28a745' : '#dc3545';
+            }
+        });
+    </script>
+</body>
+</html>
